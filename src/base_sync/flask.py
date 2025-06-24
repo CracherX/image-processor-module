@@ -4,7 +4,7 @@ from uuid import UUID
 
 import flask
 
-from .model import Model
+from .base_module import Model
 
 
 class FormatDumps(flask.json.JSONEncoder):
@@ -19,6 +19,14 @@ class FormatDumps(flask.json.JSONEncoder):
             return o.dump()
         if isinstance(o, Enum):
             return o.value
+
+        try:
+            from shapely.geometry.base import BaseGeometry
+            from shapely.geometry import mapping
+            if isinstance(o, BaseGeometry):
+                return mapping(o)
+        except (ImportError, ModuleNotFoundError):
+            pass
 
         try:
             return flask.json.JSONEncoder.default(self, o)
