@@ -28,6 +28,10 @@ class TasksService:
         self._pg = pg
 
     def create_task(self, data) -> Task:
+        self._logger.info(
+            'Создание задачи',
+            extra=data.dump()
+        )
         data = TaskCreationModel.load(data)
 
         task = Task(
@@ -48,7 +52,33 @@ class TasksService:
 
         with self._pg.begin():
             task.status = TaskStatus.ERROR
+        self._logger.error(
+            'Ошибка отправления задачи в Rabbit',
+            extra=data.dump()
+        )
         raise ModuleException(
             'Не удалось отправить задачу на обработку',
             code=502
         )
+
+    def get_task(self, task_id: int) -> Task:
+        self._logger.info(
+            'Получение задачи по ID',
+            extra={
+                'task_id': task_id,
+            }
+        )
+        with self._pg.begin():
+            task = self._pg.query(Task).filter(Task.id == task_id).first()
+            if task:
+                return task
+            self._logger.info(
+                'Задача с таким ID не найден',
+                extra={
+                    'task_id': task_id,
+                }
+            )
+            raise ModuleException(
+                'Задача с таким ID не найдена',
+                code=404
+            )
