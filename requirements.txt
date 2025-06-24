@@ -1,4 +1,8 @@
-Shapely==1.8.4
-netCDF4==1.6.3
-xarray==2023.4.2
-numpy==1.21.2
+-r src/base_module/requirements.txt
+Flask==2.2.2
+psycopg2-binary==2.9.9
+Werkzeug==2.2.2
+uwsgi==2.0.23
+requests>=2.26.0
+SQLAlchemy==1.4.17
+SQLAlchemy-Utils==0.41.1
