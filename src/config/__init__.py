@@ -2,12 +2,14 @@ import dataclasses as dc
 import os
 
 import yaml
+
 from base_module import (
     Model,
     LoggerConfig,
     ProcessorPgConfig,
     RabbitFullConfig
 )
+
 
 @dc.dataclass
 class ServiceConfig(Model):
