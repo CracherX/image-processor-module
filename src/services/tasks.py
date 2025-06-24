@@ -82,3 +82,36 @@ class TasksService:
                 'Задача с таким ID не найдена',
                 code=404
             )
+
+    def get_all_tasks(
+            self,
+            page: str = 1,
+            page_size: str = 100
+    ) -> t.List[Task]:
+        self._logger.info(
+            'Запрошен список файлов',
+            extra={
+                'page': page,
+                'page_size': page_size
+            }
+        )
+        try:
+            page = int(page)
+            page_size = int(page_size)
+        except:
+            self._logger.info(
+                'Ошибка в параметрах URL',
+                extra={
+                    'page': page,
+                    'page_size': page_size
+                }
+            )
+            raise ModuleException(
+                'Параметры не являются числами или не указаны вовсе',
+                code=400
+            )
+
+        offset = (page - 1) * page_size
+        with self._pg.begin():
+            query = self._pg.query(Task)
+            return query.offset(offset).limit(page_size).all()
