@@ -83,7 +83,7 @@ class TasksService:
                 code=404
             )
 
-    def get_all_tasks(
+    def get_list_tasks(
             self,
             page: str = 1,
             page_size: str = 100

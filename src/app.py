@@ -2,11 +2,12 @@ import os
 
 import flask
 
-from base_sync.base_module import setup_logging, ModuleException
 from base_sync import FormatDumps
+from base_sync.base_module import setup_logging, ModuleException
 from config import config
 from injectors import pg
 from models import File  # noqa
+from routers import tasks_router
 
 
 def setup_app():
@@ -18,6 +19,7 @@ def setup_app():
 
 
 app = setup_app()
+app.register_blueprint(tasks_router)
 
 
 @app.errorhandler(ModuleException)
