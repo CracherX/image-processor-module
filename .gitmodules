@@ -1,0 +1,3 @@
+[submodule "src/base_module"]
+	path = src/base_module
+	url = https://git.orbismap.ru/oms/modules/oms-monitoring/submodules/base-module.git
