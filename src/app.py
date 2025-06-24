@@ -2,7 +2,7 @@ import os
 
 import flask
 
-from base_module import setup_logging, FormatDumps, ModuleException
+from base_sync.base_module import setup_logging, FormatDumps, ModuleException
 from config import config
 from injectors import pg
 from models import File  # noqa

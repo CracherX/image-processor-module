@@ -27,35 +27,3 @@ class ProcessorPgConfig(PgConfig):
     user: str = dc.field(default=os.getenv('PG_USER', 'Test'))
     password: str = dc.field(default=os.getenv('PG_PASSWORD', 'Test'))
     database: str = dc.field(default=os.getenv('PG_DATABASE', 'Processor'))
-
-@dc.dataclass
-class _CredentialsConfig(Model):
-    """."""
-
-    host: str = dc.field(default='rabbit')
-    port: int = dc.field(default=5672)
-    user: str = dc.field(default='admin')
-    password: str = dc.field(default='12345')
-
-
-@dc.dataclass
-class RabbitPublisherConfig(_CredentialsConfig):
-    """."""
-
-    exchange: str = dc.field(default='')
-    routing_key: str = dc.field(default='')
-    reply_to: str = dc.field(default=None)
-
-
-@dc.dataclass
-class RabbitConsumerConfig(_CredentialsConfig):
-    """."""
-
-    queue_name: str = dc.field(default='')
-    error_timeout: int = dc.field(default=10)
-    max_priority: int = dc.field(default=5)
-
-
-@dc.dataclass
-class RabbitFullConfig(RabbitConsumerConfig, RabbitPublisherConfig):
-    """."""

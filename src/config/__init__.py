@@ -3,12 +3,12 @@ import os
 
 import yaml
 
-from base_module import (
+from base_sync.base_module import (
     Model,
     LoggerConfig,
     ProcessorPgConfig,
-    RabbitFullConfig
 )
+from base_sync.models import RabbitFullConfig
 
 
 @dc.dataclass

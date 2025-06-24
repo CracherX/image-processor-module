@@ -5,7 +5,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import Index
 
-from base_module import BaseOrmMappedModel, Model, ValuedEnum
+from base_sync.base_module import BaseOrmMappedModel, Model, ValuedEnum
 
 SCHEMA_NAME = 'public'
 

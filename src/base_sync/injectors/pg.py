@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy_utils import database_exists, create_database
 
-from base_module import (
+from base_sync.base_module import (
     ModuleException,
     ClassesLoggerAdapter,
     ThreadIsolatedSingleton,

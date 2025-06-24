@@ -6,3 +6,4 @@ uwsgi==2.0.23
 requests>=2.26.0
 SQLAlchemy==1.4.17
 SQLAlchemy-Utils==0.41.1
+pika==1.2.0
