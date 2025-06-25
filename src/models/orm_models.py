@@ -69,8 +69,6 @@ BaseOrmMappedModel.REGISTRY.mapped(Task)
 
 @dc.dataclass
 class Params(Model):
-    def __init__(self):
-        raise NotImplementedError()
-
-    target_projection: None = dc.field(default=None)  # TODO: аннотация типа
-    scale: None = dc.field(default=None)  # TODO: аннотация типа
+    target_projection: typing.Optional[str] = dc.field(default=None)
+    scale_x: typing.Optional[int] = dc.field(default=None)
+    scale_y: typing.Optional[int] = dc.field(default=None)

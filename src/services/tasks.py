@@ -14,7 +14,7 @@ from models import Task, TaskStatus
 class TaskCreationModel(Model):
     file_id: int = dc.field()
     algorithm: str = dc.field()
-    params: t.Optional[dict] = dc.field(default=None)  # TODO: по параметрам узнать еще
+    params: t.Optional[dict] = dc.field(default_factory=dict)  # TODO: по параметрам узнать еще
 
 
 class TasksService:

@@ -10,3 +10,4 @@ from .model import (
 from .logger import LoggerConfig, ClassesLoggerAdapter, setup_logging
 from .config import PgConfig, ProcessorPgConfig
 from .singletons import ThreadIsolatedSingleton, Singleton
+from .mule import BaseMule

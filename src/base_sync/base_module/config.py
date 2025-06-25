@@ -27,3 +27,10 @@ class ProcessorPgConfig(PgConfig):
     user: str = dc.field(default=os.getenv('PG_USER', 'Test'))
     password: str = dc.field(default=os.getenv('PG_PASSWORD', 'Test'))
     database: str = dc.field(default=os.getenv('PG_DATABASE', 'Processor'))
+
+@dc.dataclass
+class FilerConnectionConfig(Model):
+    """."""
+    url: str = dc.field(default=os.getenv('FILER_HOST', "localhost:80"))
+    connect_timeout: int = dc.field(default=int(os.getenv('FILER_TIMEOUT', 3)))
+    read_timeout: int = dc.field(default=int(os.getenv('FILER_READ_TIMEOUT', 15)))
