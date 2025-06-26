@@ -6,10 +6,9 @@ from models import Params
 
 
 class BaseProcessor(abc.ABC):
-    def __init__(self, algorithm: Algorithms):
+    def __init__(self):
         self._logger = ClassesLoggerAdapter.create(self)
-        self._algorithm = algorithm
 
     @abc.abstractmethod
-    def process(self, params: Params):
+    def process(self, src_file: str, params: Params):
         pass

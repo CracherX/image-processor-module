@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -8,6 +9,8 @@ from base_sync.models.rabbit import TaskIdentMessageModel
 from base_sync.services import RabbitService
 from base_sync.services.filer import FilerExchangeService
 from models import Task, TaskStatus, Params
+from .processor import Algorithms
+from .processor import ProcessorFactory
 
 
 class TasksWorker(BaseMule):
@@ -16,12 +19,12 @@ class TasksWorker(BaseMule):
             pg_connection: PGSession,
             rabbit: RabbitService,
             filer: FilerExchangeService,
-            temp_dir: str,
+            upload_dir: str,
     ):
         self._pg = pg_connection
         self._rabbit = rabbit
         self._filer_exchange = filer
-        self._temp_dir = temp_dir
+        self._upload_dir = upload_dir
         self._logger = ClassesLoggerAdapter.create(self)
 
     def _get_task(self, task_id: int) -> Task | None:
@@ -66,6 +69,12 @@ class TasksWorker(BaseMule):
                 self._pg.merge(task)  # TODO: добавить обработку в случае потери задачи или убрать условие
                 return task.reload()  ## (потому что не найти её в таком контексте это очень странно)
 
+    def _work_dir(self, task_id: int) -> str:
+        """Создание временной директории"""
+        temp_dir = os.path.join(self._upload_dir, str(task_id))
+        os.makedirs(temp_dir, exist_ok=True)
+        return temp_dir
+
     def _handle(self, task: Task):
         """Обработка задачи"""
         self._logger.info(
@@ -76,8 +85,14 @@ class TasksWorker(BaseMule):
         )
         task = Task.load(task.dump())
         params = Params.load(task.params or {})
+        temp_dir = self._work_dir(task.id)
+        file_path = self._filer_exchange.download_file(task.id, temp_dir)
 
+        processor = ProcessorFactory.create(Algorithms(task.algorithm))
+        processor.process(file_path, params)
 
+        self._filer_exchange.upload_file(file_path)
+        self._update_status(task, TaskStatus.DONE)
 
     def _handle_message(self, message: TaskIdentMessageModel, **_):
         """Обработка сообщения от брокера"""
@@ -98,3 +113,7 @@ class TasksWorker(BaseMule):
                 extra=exc_data, exc_info=True
             )
             self._update_status(task, TaskStatus.ERROR)
+
+    def run(self):
+        """Запуск прослушивания очереди брокера сообщений"""
+        self._rabbit.run_consume(self._handle_message, TaskIdentMessageModel)

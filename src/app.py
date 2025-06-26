@@ -6,7 +6,7 @@ from base_sync import FormatDumps
 from base_sync.base_module import setup_logging, ModuleException
 from config import config
 from injectors import pg
-from models import File  # noqa
+from models import Task, Params, TaskStatus  # noqa
 from routers import tasks_router
 
 

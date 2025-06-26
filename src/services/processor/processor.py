@@ -1,30 +1,21 @@
-from base import BaseProcessor
 import typing as t
 
-from projectror import Projector
-from scaler import Scaler
+from base_sync.base_module import ModuleException
+from .algorithms import Algorithms
+from .base import BaseProcessor
+from .projectror import Projector
+from .scaler import Scaler
 
 
-class SatellitesService:
-    """."""
+class ProcessorFactory:
+    _registry: t.Dict[Algorithms, type[BaseProcessor]] = {
+        Algorithms.PROJECTION: Projector,
+        Algorithms.SCALING: Scaler,
+    }
 
-    _PROCESSOR_CLS = [
-        Projector,
-        Scaler
-    ]
-
-    def __init__(self, storage_dir: str):
-        """."""
-        self._storage_dir = storage_dir
-        self._processors: t.Dict[SourceType, BaseProcessor] = {
-            s.SOURCE_TYPE: s(self._storage_dir) for s in self._PROCESSOR_CLS
-        }
-
-    def process(self, source_type: SourceType) -> BaseSatellite:
-        """Определение спутника по изображению"""
-
-        sat_cls = self._processors.get(source_type)
-        if not sat_cls:
-            raise ModuleException('Не удалось определить тип снимка', code=400)
-
-        return sat_cls
+    @classmethod
+    def create(cls, algorithm: Algorithms) -> BaseProcessor:
+        processor_cls = cls._registry.get(algorithm)
+        if not processor_cls:
+            raise ModuleException('Не удалось определить тип алгоритма', code=400)
+        return processor_cls()

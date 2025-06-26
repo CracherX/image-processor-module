@@ -1,0 +1,29 @@
+app_host: "0.0.0.0"
+app_port: 80
+
+pg:
+  host: "db_tasks"
+  port: 5432
+  user: "test"
+  password: "123"
+  database: "test_tasks"
+
+logging:
+  root_log_level: 10
+
+filer:
+  url: "filer:80"
+  connect_timeout: 3
+  read_timeout: 15
+  auto_comment: "Изображение было автоматически обработано"
+  server_save_path: ""
+
+rabbit:
+  host: rabbit
+  port: 5672
+  user: user
+  password: password
+  routing_key: raster-calc
+  queue_name: raster-calc
+
+upload_dir: "/uploads"

@@ -34,3 +34,5 @@ class FilerConnectionConfig(Model):
     url: str = dc.field(default=os.getenv('FILER_HOST', "localhost:80"))
     connect_timeout: int = dc.field(default=int(os.getenv('FILER_TIMEOUT', 3)))
     read_timeout: int = dc.field(default=int(os.getenv('FILER_READ_TIMEOUT', 15)))
+    auto_comment: str = dc.field(default=os.getenv('FILER_AUTO_COMMENT', ''))
+    server_save_path: str = dc.field(default=os.getenv('FILER_SERVER_SAVE_PATH', ''))

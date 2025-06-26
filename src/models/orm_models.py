@@ -3,7 +3,6 @@ import typing
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy import Index
 
 from base_sync.base_module import BaseOrmMappedModel, Model, ValuedEnum
 
@@ -21,7 +20,6 @@ class TaskStatus(ValuedEnum):
 class Task(BaseOrmMappedModel):
     __tablename__ = 'tasks'
     __table_args__ = (
-        Index('ix_files_path', 'path'),
         {'schema': SCHEMA_NAME}
     )
 

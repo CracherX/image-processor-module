@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  db_files:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: test_files
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - files_db_data:/var/lib/postgresql/data
+    networks:
+      - app
+    ports:
+      - "5432:5432"
+
+  db_tasks:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: test_tasks
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - tasker_db_data:/var/lib/postgresql/data
+    networks:
+      - app
+    ports:
+      - "5433:5432"
+
+  filer:
+    image: cracher/filer:latest
+    restart: always
+    depends_on:
+      - db_files
+    volumes:
+      - /home/nikita/PycharmProjects/File-service-flask/config.yaml:/config.yaml
+    networks:
+      - app
+    ports:
+      - "80:80"
+    command: uwsgi --ini ../uwsgi.ini
+
+
+  tasker:
+    build: .
+    restart: always
+    depends_on:
+      - filer
+      - db_tasks
+    volumes:
+      - ./config.yaml:/config.yaml
+    networks:
+      - app
+    ports:
+      - "81:80"
+    command: uwsgi --ini ../uwsgi.ini
+
+volumes:
+  files_db_data:
+  tasker_db_data:
+networks:
+  app:
