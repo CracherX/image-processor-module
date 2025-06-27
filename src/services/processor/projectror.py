@@ -12,5 +12,4 @@ class Projector(BaseProcessor):
             gdal.Warp(result, src_file, options=gdal.WarpOptions(
                 dstSRS=params.target_projection,
             ))
-            return result
-        raise ModuleException("Нет целевой проекции")
+        return result
