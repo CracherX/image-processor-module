@@ -48,9 +48,9 @@ class Task(BaseOrmMappedModel):
             )
         }
     )
-    duration: float = dc.field(
+    duration: typing.Optional[float] = dc.field(
         default=None,
-        metadata={'sa': sa.Column(sa.Float, nullable=True)}
+        metadata={'sa': sa.Column(sa.Float)}
     )
     created_at: datetime = dc.field(
         default_factory=datetime.utcnow,

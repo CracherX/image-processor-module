@@ -10,9 +10,12 @@ pg:
 
 logging:
   root_log_level: 10
+  modules:
+    - name: pika
+      log_level: 30
 
 filer:
-  url: "filer:80"
+  url: "http://filer:80"
   connect_timeout: 3
   read_timeout: 15
   auto_comment: "Изображение было автоматически обработано"
@@ -21,9 +24,9 @@ filer:
 rabbit:
   host: rabbit
   port: 5672
-  user: user
-  password: password
-  routing_key: raster-calc
-  queue_name: raster-calc
+  user: test
+  password: test
+  routing_key: tasks
+  queue_name: tasks
 
 upload_dir: "/uploads"

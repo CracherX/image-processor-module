@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session as PGSession
 
 from base_sync.base_module import Model, ClassesLoggerAdapter
 from base_sync.base_module import ModuleException
+from base_sync.models import Algorithms
 from base_sync.models.rabbit import TaskIdentMessageModel
 from base_sync.services import RabbitService
 from models import Task, TaskStatus
@@ -13,8 +14,8 @@ from models import Task, TaskStatus
 @dc.dataclass
 class TaskCreationModel(Model):
     file_id: int = dc.field()
-    algorithm: str = dc.field()
-    params: t.Optional[dict] = dc.field(default_factory=dict)  # TODO: по параметрам узнать еще
+    algorithm: Algorithms = dc.field()
+    params: dict = dc.field(default_factory=dict)
 
 
 class TasksService:
@@ -30,13 +31,19 @@ class TasksService:
     def create_task(self, data) -> Task:
         self._logger.info(
             'Создание задачи',
-            extra=data.dump()
+            extra=data
         )
-        data = TaskCreationModel.load(data)
-
+        try:
+            data = TaskCreationModel.load(data)
+        except Exception:
+            raise ModuleException(
+                "Ошибка заполнения тела запроса. Убедитесь что алгоритм указан верно",
+                code=400,
+                data=Algorithms.to_dict()
+            )
         task = Task(
             file_id=data.file_id,
-            algorithm=data.algorithm,
+            algorithm=data.algorithm.value,
             params=data.params
         )
 

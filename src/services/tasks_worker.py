@@ -9,7 +9,7 @@ from base_sync.models.rabbit import TaskIdentMessageModel
 from base_sync.services import RabbitService
 from base_sync.services.filer import FilerExchangeService
 from models import Task, TaskStatus, Params
-from .processor import Algorithms
+from base_sync.models import Algorithms
 from .processor import ProcessorFactory
 
 
@@ -86,12 +86,12 @@ class TasksWorker(BaseMule):
         task = Task.load(task.dump())
         params = Params.load(task.params or {})
         temp_dir = self._work_dir(task.id)
-        file_path = self._filer_exchange.download_file(task.id, temp_dir)
+        file_path = self._filer_exchange.download_file(task.file_id, temp_dir)
 
         processor = ProcessorFactory.create(Algorithms(task.algorithm))
-        processor.process(file_path, params)
+        result = processor.process(file_path, params)
 
-        self._filer_exchange.upload_file(file_path)
+        self._filer_exchange.upload_file(result)
         self._update_status(task, TaskStatus.DONE)
 
     def _handle_message(self, message: TaskIdentMessageModel, **_):

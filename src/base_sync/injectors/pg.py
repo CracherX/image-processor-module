@@ -131,7 +131,7 @@ class PgConnectionInj(metaclass=ThreadIsolatedSingleton):
                 return self._init_db()
             except Exception as e:
                 self._logger.error(
-                    'Ошибка инициализации базы данны, ожидание',
+                    'Ошибка инициализации базы данных, ожидание',
                     exc_info=True, extra={'e': e}
                 )
                 time.sleep(self._init_error_timeout)

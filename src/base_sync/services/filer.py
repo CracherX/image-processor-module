@@ -26,22 +26,32 @@ class _FilerBaseAPI:
 
 class FilerExchangeService(_FilerBaseAPI):
     def upload_file(self, file_path: str):
-        url = f"{self._url}/files/file/"
+        url = f"{self._url}/api/files/file/"
         with open(file_path, 'rb') as f:
-            files = {'upload': (file_path, f)}
+            files = {'upload': f}
             data = {
                 'comment': self._auto_comment,
                 'path': self._server_save_path,
             }
             response = requests.post(url, files=files, data=data,
                                      timeout=(self._con_timeout, self._read_timeout))
-            print("ОТЛАДКА:", response.json())
-            # TODO: сделать модуль исключений клиента
+            if response.status_code != 200:
+                raise ModuleException(
+                    'Не удалось выгрузить результат обработки',
+                    data=response.__dict__,
+                    code=response.status_code
+                )
 
     def download_file(self, file_id, save_to: str) -> str:
-        url = f"{self._url}/files/file/{file_id}/download/"
+        url = f"{self._url}/api/files/file/{file_id}/download/"
         response = requests.get(url, timeout=(self._con_timeout, self._read_timeout))
-        cd = response.headers.get('content-disposition')
+        if response.status_code != 200:
+            raise ModuleException(
+                'Ошибка получения ответа файлового сервиса',
+                data=response.__dict__,
+                code=response.status_code
+            )
+        cd = response.headers.get('Content-Disposition')
         filename = self._parse_filename(cd)
         full_path = os.path.join(save_to, filename)
         if response.status_code == 200:

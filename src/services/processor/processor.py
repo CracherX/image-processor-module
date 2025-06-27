@@ -1,7 +1,7 @@
 import typing as t
 
 from base_sync.base_module import ModuleException
-from .algorithms import Algorithms
+from base_sync.models import Algorithms
 from .base import BaseProcessor
 from .projectror import Projector
 from .scaler import Scaler
