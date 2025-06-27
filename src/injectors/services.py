@@ -9,6 +9,7 @@ from .connections import pg
 def rabbit() -> RabbitService:
     return RabbitService(config.rabbit)
 
+
 def filer() -> FilerExchangeService:
     return FilerExchangeService(
         url=config.filer.url,
@@ -18,11 +19,13 @@ def filer() -> FilerExchangeService:
         auto_comment=config.filer.auto_comment,
     )
 
+
 def tasks() -> TasksService:
     return TasksService(
         rabbit=rabbit(),
         pg=pg.acquire_session()
     )
+
 
 def tasks_mule() -> TasksWorker:
     """."""
