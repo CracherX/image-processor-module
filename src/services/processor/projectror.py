@@ -1,6 +1,5 @@
 from osgeo import gdal
 
-from base_sync.base_module import ModuleException
 from models import Params
 from services.processor.base import BaseProcessor
 

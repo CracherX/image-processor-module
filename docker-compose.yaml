@@ -73,7 +73,7 @@ services:
     networks:
       - app
 
-  worker:
+  worker: &workers
     build: .
     restart: always
     command: [ "python3", "-u", "scripts/tasks_worker.py" ]
@@ -83,6 +83,16 @@ services:
       - tasker
     networks:
       - app
+
+  worker1:
+    <<: *workers
+
+  worker2:
+    <<: *workers
+
+  worker3:
+    <<: *workers
+
 
 volumes:
   files_db_data:

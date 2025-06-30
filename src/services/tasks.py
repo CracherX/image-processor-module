@@ -96,7 +96,7 @@ class TasksService:
             page_size: str = 100
     ) -> t.List[Task]:
         self._logger.info(
-            'Запрошен список файлов',
+            'Запрошен список задач',
             extra={
                 'page': page,
                 'page_size': page_size

@@ -90,7 +90,6 @@ class TasksWorker(BaseMule):
 
         processor = ProcessorFactory.create(Algorithms(task.algorithm))
         result = processor.process(file_path, params)
-
         self._filer_exchange.upload_file(result)
         self._update_status(task, TaskStatus.DONE)
 
