@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  db_files:
+  db:
     image: postgres:15
     restart: always
     environment:
@@ -9,31 +9,18 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: 123
     volumes:
-      - files_db_data:/var/lib/postgresql/data
+      - /var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
     networks:
       - app
     ports:
       - "5432:5432"
 
-  db_tasks:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_DB: test_tasks
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: 123
-    volumes:
-      - tasker_db_data:/var/lib/postgresql/data
-    networks:
-      - app
-    ports:
-      - "5433:5432"
-
-  filer:
+  files:
     image: cracher/filer:latest
     restart: always
     depends_on:
-      - db_files
+      - db
     volumes:
       - /home/nikita/PycharmProjects/File-service-flask/config.yaml:/config.yaml
     networks:
@@ -42,12 +29,12 @@ services:
       - "80:80"
     command: uwsgi --ini ../uwsgi.ini
 
-  tasker:
+  tasks:
     build: .
     restart: always
     depends_on:
-      - filer
-      - db_tasks
+      - files
+      - db
       - rabbit
     volumes:
       - ./config.yaml:/config.yaml
@@ -69,7 +56,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=test
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - /var/lib/rabbitmq
     networks:
       - app
 
@@ -80,23 +67,19 @@ services:
     volumes:
       - ./config.yaml:/config.yaml
     depends_on:
-      - tasker
+      - db
+      - tasks
     networks:
       - app
 
-  worker1:
+  raster-calc-worker1:
     <<: *workers
 
-  worker2:
+  raster-calc-worker2:
     <<: *workers
 
-  worker3:
+  raster-calc-worker3:
     <<: *workers
 
-
-volumes:
-  files_db_data:
-  tasker_db_data:
-  rabbitmq_data:
 networks:
   app:

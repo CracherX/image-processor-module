@@ -28,6 +28,7 @@ class ProcessorPgConfig(PgConfig):
     password: str = dc.field(default=os.getenv('PG_PASSWORD', 'Test'))
     database: str = dc.field(default=os.getenv('PG_DATABASE', 'Processor'))
 
+
 @dc.dataclass
 class FilerConnectionConfig(Model):
     """."""

@@ -6,11 +6,10 @@ from sqlalchemy.orm import Session as PGSession
 
 from base_sync.base_module import BaseMule, ClassesLoggerAdapter, sa_operator, ModuleException
 from base_sync.models.rabbit import TaskIdentMessageModel
+from base_sync.services import FilesStorageService
 from base_sync.services import RabbitService
-from base_sync.services.filer import FilerExchangeService
-from models import Task, TaskStatus, Params
-from base_sync.models import Algorithms
-from .processor import ProcessorFactory
+from models import Task, TaskStatus
+from .processor import ProcessorFactoryService
 
 
 class TasksWorker(BaseMule):
@@ -18,13 +17,15 @@ class TasksWorker(BaseMule):
             self,
             pg_connection: PGSession,
             rabbit: RabbitService,
-            filer: FilerExchangeService,
-            upload_dir: str,
+            filer: FilesStorageService,
+            processor: ProcessorFactoryService,
+            work_dir: str,
     ):
         self._pg = pg_connection
+        self._processor_factory = processor
         self._rabbit = rabbit
-        self._filer_exchange = filer
-        self._upload_dir = upload_dir
+        self._files = filer
+        self._temp_dir = work_dir
         self._logger = ClassesLoggerAdapter.create(self)
 
     def _get_task(self, task_id: int) -> Task | None:
@@ -66,12 +67,12 @@ class TasksWorker(BaseMule):
         with self._pg.begin():
             if self._pg.get(Task, task.id,
                             with_for_update=True):
-                self._pg.merge(task)  # TODO: добавить обработку в случае потери задачи или убрать условие
-                return task.reload()  ## (потому что не найти её в таком контексте это очень странно)
+                self._pg.merge(task)
+                return task.reload()
 
     def _work_dir(self, task_id: int) -> str:
         """Создание временной директории"""
-        temp_dir = os.path.join(self._upload_dir, str(task_id))
+        temp_dir = os.path.join(self._temp_dir, str(task_id))
         os.makedirs(temp_dir, exist_ok=True)
         return temp_dir
 
@@ -84,13 +85,13 @@ class TasksWorker(BaseMule):
             }
         )
         task = Task.load(task.dump())
-        params = Params.load(task.params or {})
+        params = task.params or {}
         temp_dir = self._work_dir(task.id)
-        file_path = self._filer_exchange.download_file(task.file_id, temp_dir)
+        file_path = self._files.download_file(task.file_id, temp_dir)
 
-        processor = ProcessorFactory.create(Algorithms(task.algorithm))
+        processor = self._processor_factory.create(task.algorithm)
         result = processor.process(file_path, params)
-        self._filer_exchange.upload_file(result)
+        self._files.upload_file(result)
         self._update_status(task, TaskStatus.DONE)
 
     def _handle_message(self, message: TaskIdentMessageModel, **_):

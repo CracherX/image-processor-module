@@ -1,21 +1,16 @@
 import typing as t
 
 from base_sync.base_module import ModuleException
-from base_sync.models import Algorithms
 from .base import BaseProcessor
-from .projectror import Projector
-from .scaler import Scaler
 
 
-class ProcessorFactory:
-    _registry: t.Dict[Algorithms, type[BaseProcessor]] = {
-        Algorithms.PROJECTION: Projector,
-        Algorithms.SCALING: Scaler,
-    }
+class ProcessorFactoryService:
 
-    @classmethod
-    def create(cls, algorithm: Algorithms) -> BaseProcessor:
-        processor_cls = cls._registry.get(algorithm)
-        if not processor_cls:
-            raise ModuleException('Не удалось определить тип алгоритма', code=400)
-        return processor_cls()
+    def __init__(self, processors: t.List[type[BaseProcessor]]):
+        self._processors = processors
+
+    def create(self, algorithm: str) -> BaseProcessor:
+        for cls in self._processors:
+            if cls.ALGORITHM == algorithm:
+                return cls()
+        raise ModuleException('Не удалось определить тип алгоритма', code=400)

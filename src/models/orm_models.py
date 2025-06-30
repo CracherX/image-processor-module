@@ -63,10 +63,3 @@ class Task(BaseOrmMappedModel):
 
 
 BaseOrmMappedModel.REGISTRY.mapped(Task)
-
-
-@dc.dataclass
-class Params(Model):
-    target_projection: typing.Optional[str] = dc.field(default=None)
-    scale_x: typing.Optional[int] = dc.field(default=None)
-    scale_y: typing.Optional[int] = dc.field(default=None)

@@ -1,17 +1,25 @@
+import dataclasses as dc
+
 from osgeo import gdal
 
-from models import Params
+from base_sync.base_module import Model
 from services.processor.base import BaseProcessor
 
 
+@dc.dataclass
+class Params(Model):
+    scale_x: int = dc.field()
+    scale_y: int = dc.field()
+
+
 class Scaler(BaseProcessor):
-    def process(self, src_file: str, params: Params) -> str:
+    ALGORITHM = 'SCALING'
+
+    def process(self, src_file: str, params: dict) -> str:
         result = src_file + '_processed.jp2'
-        args = {
-        }
-        if params.scale_x: args['xRes'] = params.scale_x
-        if params.scale_y: args['yRes'] = params.scale_y
+        params = Params.load(params)
         gdal.Warp(result, src_file, options=gdal.WarpOptions(
-            **args
+            xRes=params.scale_x,
+            yRes=params.scale_y,
         ))
         return result

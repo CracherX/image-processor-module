@@ -7,7 +7,7 @@ from base_sync.base_module import ClassesLoggerAdapter
 from base_sync.base_module import ModuleException
 
 
-class _FilerBaseAPI:
+class _FilesBaseAPI:
     def __init__(
             self,
             url: str,
@@ -24,7 +24,7 @@ class _FilerBaseAPI:
         self._server_save_path = server_save_path
 
 
-class FilerExchangeService(_FilerBaseAPI):
+class FilesStorageService(_FilesBaseAPI):
     def upload_file(self, file_path: str):
         url = f"{self._url}/api/files/file/"
         with open(file_path, 'rb') as f:

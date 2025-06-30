@@ -2,7 +2,7 @@ app_host: "0.0.0.0"
 app_port: 80
 
 pg:
-  host: "db_tasks"
+  host: "db"
   port: 5432
   user: "test"
   password: "123"
@@ -15,7 +15,7 @@ logging:
       log_level: 30
 
 filer:
-  url: "http://filer:80"
+  url: "http://files:80"
   connect_timeout: 3
   read_timeout: 15
   auto_comment: "Изображение было автоматически обработано"
@@ -29,4 +29,4 @@ rabbit:
   routing_key: tasks
   queue_name: tasks
 
-upload_dir: "/uploads"
+work_dir: "/uploads"

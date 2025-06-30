@@ -8,6 +8,7 @@ class FilerErrorResponse(Model):
     data: dict = dc.field(default_factory=dict)
     error: str = dc.field(default=None)
 
+
 @dc.dataclass
 class FilerUploadRequest(Model):
     upload: bytes = dc.field()

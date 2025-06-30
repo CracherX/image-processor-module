@@ -1,13 +1,14 @@
 import abc
 
 from base_sync.base_module import ClassesLoggerAdapter
-from models import Params
 
 
 class BaseProcessor(abc.ABC):
+    ALGORITHM: str
+
     def __init__(self):
         self._logger = ClassesLoggerAdapter.create(self)
 
     @abc.abstractmethod
-    def process(self, src_file: str, params: Params):
+    def process(self, src_file: str, params):
         pass

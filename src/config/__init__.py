@@ -20,7 +20,7 @@ class ServiceConfig(Model):
     rabbit: RabbitFullConfig = dc.field(default_factory=RabbitFullConfig)
     pg: ProcessorPgConfig = dc.field(default_factory=ProcessorPgConfig)
     logging: LoggerConfig = dc.field(default_factory=LoggerConfig)
-    upload_dir: str = dc.field(default=os.getenv('UPLOAD_DIR', '/uploads'))
+    work_dir: str = dc.field(default=os.getenv('WORK_DIR', '/uploads'))
     filer: FilerConnectionConfig = dc.field(default_factory=FilerConnectionConfig)
 
 
