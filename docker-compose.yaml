@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: 123
     volumes:
-      - /var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d
+      - ./development/storage:/var/lib/postgresql/data
+      - ./development/init:/docker-entrypoint-initdb.d
     networks:
       - app
     ports:
@@ -19,8 +19,6 @@ services:
   files:
     image: cracher/filer:latest
     restart: always
-    depends_on:
-      - db
     volumes:
       - /home/nikita/PycharmProjects/File-service-flask/config.yaml:/config.yaml
     networks:
@@ -32,10 +30,6 @@ services:
   tasks:
     build: .
     restart: always
-    depends_on:
-      - files
-      - db
-      - rabbit
     volumes:
       - ./config.yaml:/config.yaml
     networks:
@@ -60,26 +54,16 @@ services:
     networks:
       - app
 
-  worker: &workers
+  worker:
+    deploy:
+      replicas: 3
     build: .
     restart: always
     command: [ "python3", "-u", "scripts/tasks_worker.py" ]
     volumes:
       - ./config.yaml:/config.yaml
-    depends_on:
-      - db
-      - tasks
     networks:
       - app
-
-  raster-calc-worker1:
-    <<: *workers
-
-  raster-calc-worker2:
-    <<: *workers
-
-  raster-calc-worker3:
-    <<: *workers
 
 networks:
   app:
