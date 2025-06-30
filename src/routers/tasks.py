@@ -14,7 +14,7 @@ def create_task():
     return flask.jsonify(res)
 
 
-@tasks_router.get('task/<int:task_id>/')
+@tasks_router.get('/task/<int:task_id>/')
 def get_task(task_id):
     ts = tasks()
     res = ts.get_task(task_id)

@@ -13,8 +13,6 @@ services:
       - ./development/init:/docker-entrypoint-initdb.d
     networks:
       - app
-    ports:
-      - "5432:5432"
 
   files:
     image: cracher/filer:latest
@@ -23,8 +21,6 @@ services:
       - /home/nikita/PycharmProjects/File-service-flask/config.yaml:/config.yaml
     networks:
       - app
-    ports:
-      - "80:80"
     command: uwsgi --ini ../uwsgi.ini
 
   tasks:
@@ -34,16 +30,11 @@ services:
       - ./config.yaml:/config.yaml
     networks:
       - app
-    ports:
-      - "81:80"
     command: uwsgi --ini ../uwsgi.ini
 
   rabbit:
     image: rabbitmq:4.1.1-management
     hostname: rabbit
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=test
@@ -62,6 +53,16 @@ services:
     command: [ "python3", "-u", "scripts/tasks_worker.py" ]
     volumes:
       - ./config.yaml:/config.yaml
+    networks:
+      - app
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./development/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
     networks:
       - app
 
